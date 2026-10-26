@@ -1,5 +1,3 @@
-[![CI Pipeline](https://github.com/OWNER/REPOSITORY/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/24CS080-Varshil/AWDF_Prac12/actions/workflows/ci.yml)
-
 # Task Manager API
 
 Express and MongoDB API for the Task Manager application.
@@ -15,6 +13,8 @@ npm start
 Start a local MongoDB server before running the API. By default, the application connects to `mongodb://127.0.0.1:27017/taskmanager`; change `MONGODB_URI` in `.env` if needed.
 
 Set `JWT_SECRET` in `.env` to a long, random value. The API will not start without it.
+Set `GEMINI_API_KEY` to enable AI-generated task descriptions. Keep this key in
+the backend `.env` file; it must never be added to the frontend.
 
 The API starts at `http://localhost:3000` after MongoDB connects.
 
@@ -28,6 +28,7 @@ The API starts at `http://localhost:3000` after MongoDB connects.
 | `DELETE` | `/tasks/:id` | Delete a task |
 | `GET` | `/tasks/:id` | Get one task |
 | `GET` | `/tasks/debug/cache` | Inspect cache hit/miss metrics |
+| `POST` | `/ai/task-suggestion` | Generate a description from a task title |
 
 ## Authentication
 
@@ -40,6 +41,11 @@ The API starts at `http://localhost:3000` after MongoDB connects.
 All `/tasks` endpoints require `Authorization: Bearer <token>`. Tasks belong to their creator and are only accessible by that user.
 
 Task data is stored in the local `taskmanager` MongoDB database and persists after an API restart.
+
+The AI suggestion endpoint requires the bearer token and accepts
+`{ "title": "Prepare practical file" }` as its JSON body. It returns
+`{ "suggestion": "..." }`. AI failures return a clear error without affecting
+the regular task endpoints.
 
 ## In-memory cache
 

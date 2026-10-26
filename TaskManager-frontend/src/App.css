@@ -48,6 +48,28 @@ form {
     gap: 10px;
 }
 
+.task-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.task-actions button {
+    margin: 0;
+}
+
+.ai-suggestion {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-left: 4px solid #7c3aed;
+    border-radius: 6px;
+    background: #f5f3ff;
+    color: #4c1d95;
+}
+
+.ai-suggestion p {
+    margin: 6px 0 0;
+}
+
 input {
     padding: 12px;
     border: 1px solid #ccc;

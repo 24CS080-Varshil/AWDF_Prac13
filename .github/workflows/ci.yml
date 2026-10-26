@@ -7,9 +7,30 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: TaskManagerAPI
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run lint
+
+  build-and-test:
+    needs: lint
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: TaskManagerAPI

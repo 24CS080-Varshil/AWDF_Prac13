@@ -8,6 +8,7 @@ const logger = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const taskRoutes = require("./routes/taskRoutes");
 const authRoutes = require("./routes/authRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 require("./listeners");
 
 // Parse JSON
@@ -37,6 +38,7 @@ app.use(logger);
 
 // Application routes
 app.use("/auth", authRoutes);
+app.use("/ai", aiRoutes);
 app.use("/tasks", taskRoutes);
 
 // 404 handler

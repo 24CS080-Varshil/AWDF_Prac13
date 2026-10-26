@@ -15,6 +15,7 @@ and manage their own tasks through the browser.
 - Contact and getting-started information pages
 - Lazy-loaded Projects and Contact routes
 - User-scoped in-memory task caching
+- AI-generated task descriptions from task titles
 - Event-driven notifications for task creation and deletion
 - Local development and Docker Compose workflows
 
@@ -53,6 +54,8 @@ Copy-Item .env.example .env
 
 Edit `.env` and replace `JWT_SECRET` with a long, random value. The default
 configuration expects MongoDB at `mongodb://127.0.0.1:27017/taskmanager`.
+To enable AI task descriptions, also set `GEMINI_API_KEY` in this file. The key
+is read only by the API and is never sent to the frontend.
 
 Then install dependencies and start the API:
 
@@ -134,6 +137,7 @@ are scoped to the authenticated user.
 | `PUT` | `/tasks/:id` | Update a task |
 | `DELETE` | `/tasks/:id` | Delete a task |
 | `GET` | `/tasks/debug/cache` | Inspect cache hit/miss statistics |
+| `POST` | `/ai/task-suggestion` | Generate a task description from its title |
 
 Example registration request:
 
@@ -173,6 +177,11 @@ The GitHub Actions workflow runs the API tests on pushes to the `main` branch.
   notification handling.
 - The frontend stores the login token in browser local storage and clears it
   when the API reports an expired session.
+- The authenticated `POST /ai/task-suggestion` endpoint calls Gemini on the
+  backend with a ten-second timeout. The React task form displays the returned
+  description and copies it into the editable description field. If Gemini is
+  unavailable or not configured, the API returns an explanatory error and
+  normal task creation remains available.
 
 ## Security
 

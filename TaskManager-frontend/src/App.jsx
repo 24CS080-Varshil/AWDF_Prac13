@@ -23,6 +23,8 @@ function App() {
     const [loading, setLoading] = useState(Boolean(token));
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
+    const [aiSuggestion, setAiSuggestion] = useState("");
+    const [aiLoading, setAiLoading] = useState(false);
 
     const logout = useCallback((notice = "") => {
         localStorage.removeItem(TOKEN_KEY);
@@ -33,6 +35,7 @@ function App() {
         setDescription("");
         setError(notice);
         setMessage("");
+        setAiSuggestion("");
     }, []);
 
     const authenticatedFetch = useCallback(async (path, options = {}) => {
@@ -159,6 +162,38 @@ function App() {
             }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const generateTaskDescription = async () => {
+        if (!title.trim()) {
+            setError("Enter a task title before generating a description");
+            return;
+        }
+
+        try {
+            setAiLoading(true);
+            setError("");
+            setMessage("");
+            const response = await authenticatedFetch("/ai/task-suggestion", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title })
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Unable to generate an AI suggestion");
+            }
+
+            setAiSuggestion(data.suggestion);
+            setDescription(data.suggestion);
+        } catch (requestError) {
+            if (requestError.message !== "Session expired") {
+                setError(requestError.message);
+            }
+        } finally {
+            setAiLoading(false);
         }
     };
 
@@ -309,8 +344,19 @@ function App() {
                     value={description}
                     onChange={(event) => setDescription(event.target.value)}
                 />
-                <button type="submit" disabled={loading}>Add task</button>
+                <div className="task-actions">
+                    <button type="button" onClick={generateTaskDescription} disabled={loading || aiLoading}>
+                        {aiLoading ? "Generating…" : "Generate with AI"}
+                    </button>
+                    <button type="submit" disabled={loading || aiLoading}>Add task</button>
+                </div>
             </form>
+            {aiSuggestion && (
+                <aside className="ai-suggestion" aria-live="polite">
+                    <strong>AI-generated description</strong>
+                    <p>{aiSuggestion}</p>
+                </aside>
+            )}
 
             <h2>Tasks</h2>
             {loading && <p>Loading…</p>}
